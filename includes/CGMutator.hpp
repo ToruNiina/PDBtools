@@ -25,6 +25,7 @@ namespace arabica
 
     private:
 
+        void no_mut(std::vector<BeadSptr>::iterator& iter, std::vector<BeadSptr>::iterator& end);
         void mut_to_A(std::vector<BeadSptr>::iterator& iter, std::vector<BeadSptr>::iterator& end);
         void mut_to_C(std::vector<BeadSptr>::iterator& iter, std::vector<BeadSptr>::iterator& end);
         void mut_to_G(std::vector<BeadSptr>::iterator& iter, std::vector<BeadSptr>::iterator& end);
@@ -61,6 +62,7 @@ namespace arabica
             switch(mutated_seq[current_seq])
             {
             case '=':
+                no_mut(iter, end);
                 break;
             case 'A':
                 mut_to_A(iter, end);
@@ -80,6 +82,22 @@ namespace arabica
         mutated = std::shared_ptr<CGChain>(new CGChain(chain));
 
         return;
+    }
+
+    void CGMutator::no_mut(std::vector<BeadSptr>::iterator& iter, std::vector<BeadSptr>::iterator& end)
+    {
+        int residue_number((*iter)->get_iResNum());
+        while(true)
+        {
+            if(iter == end) return;
+
+            if((*iter)->get_iResNum() == residue_number)
+            {
+                if(iter != end) ++iter;
+            }else{
+                return;
+            }
+        }
     }
 
     void CGMutator::mut_to_A(std::vector<BeadSptr>::iterator& iter, std::vector<BeadSptr>::iterator& end)
