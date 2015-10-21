@@ -1,8 +1,17 @@
 ##PDB(mainly CG style in CafeMol) editer tool
 
-使ったものなど。
+必要に迫られて作ったものなど。
 
 arabica is a name of one of the coffee trees.
+
+###Usage
+
+seqextr outputs DNA sequence in pdb file
+`$./seqextr [option: -cg] <filename>.pdb`
+
+mutator outputs mutated DNA pdb file to "out.pdb" (cg style only)
+`$./mutator <filename>.pdb`
+
 
 ###Reference
 

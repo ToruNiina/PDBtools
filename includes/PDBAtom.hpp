@@ -9,17 +9,20 @@
 
 namespace arabica
 {
-    enum LINE_TYPE
-    {
-        ATOM,
-        TER,
-        END,
-        EMPTY,
-        UNKNOWN
-    };
-
     class PDBAtom
     {
+    public:
+        enum LINE_TYPE
+        {
+            ATOM,
+            TER,
+            END,
+            EMPTY,
+            UNKNOWN
+        };
+
+    private:
+
         int serial, resSeq;
         std::string name, resName, element, charge;
         char altLoc, chainID, iCode;
@@ -43,7 +46,7 @@ namespace arabica
     PDBAtom::PDBAtom(){}
     PDBAtom::~PDBAtom(){}
 
-    LINE_TYPE PDBAtom::getAtomLine(std::ifstream& ifs)
+    PDBAtom::LINE_TYPE PDBAtom::getAtomLine(std::ifstream& ifs)
     {
         std::string line;
         getline(ifs, line);
