@@ -1,0 +1,7 @@
+*.pdb
+!*.cpp
+!*.hpp
+!CMakeLists.txt
+CMakeCache.txt
+Makefile
+CMakeFiles/
