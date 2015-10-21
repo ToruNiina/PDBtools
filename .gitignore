@@ -1,7 +1,11 @@
 *.pdb
+*.dat
 !*.cpp
 !*.hpp
 !CMakeLists.txt
 CMakeCache.txt
+cmake_install.cmake
 Makefile
 CMakeFiles/
+seqextr
+mutator
