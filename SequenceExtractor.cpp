@@ -1,4 +1,4 @@
-#include "includes/PDBAtom.hpp"
+#include "includes/PDBChain.hpp"
 #include "includes/CGChain.hpp"
 #include <boost/regex.hpp>
 
@@ -30,48 +30,19 @@ int main(int argc, char* argv[])
     {//read plane PDB
         std::ifstream pdbfile(argv[1]);
 
-        int current_resSeq(-1);
-        std::string seq;
         while(!pdbfile.eof())
         {
-            AtomSptr atom(new PDBAtom);
-            PDBAtom::LINE_TYPE lt(atom->getAtomLine(pdbfile));
-            if(lt == PDBAtom::ATOM)
-            {
-                boost::regex seqdna("D[ACGT]");//, std::regex_constants::grep
-                std::string resName(atom->get_resName());
-                int resSeq(atom->get_resSeq());
-                if(current_resSeq == resSeq) continue;
-                else current_resSeq = resSeq;
+            PDBChain chain;
+            chain.read_block(pdbfile);
 
-                if(boost::regex_search(resName, seqdna))
-                {
-                    size_t dpos(resName.find('D'));
-                    seq += resName[dpos+1];
-                }else{
-                    resName += ' ';
-                    seq += resName;
-                }
-            }
-            else if(lt == PDBAtom::TER)
+            if(chain.is_there_chain())
             {
-                std::cout << "Chain: " << seq << std::endl;
+                std::cout << "Chain " << chain.get_chainID() << " : ";
+                std::cout << chain.get_sequence() << std::endl;
                 std::cout << "TER" << std::endl;
-                seq.erase();
-            }
-            else if(lt == PDBAtom::END)
-            {
-                std::cout << "Chain: " << seq << std::endl;
-                std::cout << "END" << std::endl;
-                seq.erase();
-            }
-            else
-            {
-                continue;
             }
         }
     }
-
     return 0;
 }
 

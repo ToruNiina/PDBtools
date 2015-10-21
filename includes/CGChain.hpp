@@ -21,19 +21,19 @@ namespace arabica
     class CGChain
     {
         char ChainID;
-        int iunit, ResNum;
+        int iunit;
         std::vector<BeadSptr> residue;
 
     public:
-        CGChain() : ResNum(0){}
+        CGChain(){}
 
-        CGChain(const BeadSptr& bead) : ChainID(bead->get_ChainID()), ResNum(1)
+        CGChain(const BeadSptr& bead) : ChainID(bead->get_ChainID())
         {
             residue.push_back(bead);
         }
 
         CGChain(std::vector<BeadSptr>& beads)
-            : ChainID(beads.at(0)->get_ChainID()), ResNum(beads.size()), residue(beads)
+            : ChainID(beads.at(0)->get_ChainID()), residue(beads)
         {}
 
         ~CGChain(){}
@@ -102,7 +102,6 @@ namespace arabica
 
             if(line.substr(0,2) == ">>")
             {
-                ResNum = residue.size();
                 return;
             }
 

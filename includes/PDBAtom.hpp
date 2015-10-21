@@ -37,8 +37,30 @@ namespace arabica
         LINE_TYPE getAtomLine(std::ifstream& ifs);
         void read_line(std::string line);
 
-        std::string get_resName() const {return resName;}
         int get_resSeq() const {return resSeq;}
+        int get_serial() const {return serial;}
+        std::string get_name() const {return name;}
+        std::string get_element() const {return element;}
+        std::string get_charge() const {return charge;}
+        std::string get_resName() const {return resName;}
+        char get_altLoc() const {return altLoc;}
+        char get_chainID() const {return chainID;}
+        char get_iCode() const {return iCode;}
+        double get_x() const {return x;}
+        double get_y() const {return y;}
+        double get_z() const {return z;}
+        double get_occupancy() const {return occupancy;}
+        double get_tempFactor() const {return tempFactor;}
+
+        void set_resSeq(int rs){resSeq = rs;}
+        void set_name(std::string n){name = n;}
+        void set_resName(std::string rn){resName = rn;}
+        void set_element(std::string el){element = el;}
+        void set_charge(std::string ch){charge = ch;}
+        void set_chainID(char cid){chainID = cid;}
+        void set_x(double _x){x = _x;}
+        void set_y(double _y){y = _y;}
+        void set_z(double _z){z = _z;}
 
         friend std::ostream& operator<<(std::ostream& os, const PDBAtom& a);
     };
@@ -64,7 +86,7 @@ namespace arabica
             }
 #ifdef _DEBUG
             std::cout << "unknown line: " << line << std::endl;
-#endif//_DEBUG
+#endif //_DEBUG
             return UNKNOWN;
         }
         
