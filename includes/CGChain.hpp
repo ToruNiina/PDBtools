@@ -34,7 +34,9 @@ namespace arabica
 
         CGChain(std::vector<BeadSptr>& beads)
             : ChainID(beads.at(0)->get_ChainID()), residue(beads)
-        {}
+        {
+            ;
+        }
 
         ~CGChain(){}
 
@@ -95,7 +97,8 @@ namespace arabica
             if(line.substr(0,2) == "<<")
             {
                 if(block_found)
-                    throw std::invalid_argument("CG PDB block does not close correctly");
+                    throw std::invalid_argument(
+                            "CG PDB block does not close correctly");
                 block_found = true;
                 continue;
             }
@@ -110,7 +113,8 @@ namespace arabica
                 if(block_found)
                 {
                     std::cout << "ENDMDL found." << std::endl;
-                    throw std::invalid_argument("CG PDB block does not close correctly");
+                    throw std::invalid_argument(
+                            "CG PDB block does not close correctly");
                 }
             }
 
@@ -119,7 +123,8 @@ namespace arabica
                 if(block_found)
                 {
                     std::cout << "MODEL found." << std::endl;
-                    throw std::invalid_argument("CG PDB block does not close correctly");
+                    throw std::invalid_argument(
+                            "CG PDB block does not close correctly");
                 }
             }
 #ifdef _DEBUG

@@ -3,56 +3,121 @@ using namespace arabica;
 
 int main(int argc, char *argv[])
 {
+    const size_t width_of_shell(75);
     std::ifstream ifs(argv[1]);
-    std::ofstream ofs("out.pdb");
 
     std::cout << "PDB CG(CafeMol) style Mutator" << std::endl;            
     std::cout << "please input sequence that you want." << std::endl;            
     std::cout << "letter = means the residue does not change" << std::endl;
     std::cout << "sequence of input PDB file indicated below." << std::endl;
-    std::cout << "Note: only mutation is supported. insertion, elongation, deletion is not supported yet." << std::endl;
+    std::cout << "Note: only mutation is supported. insertion,";
+    std::cout << " elongation, deletion is not supported yet." << std::endl;
     std::cout << std::endl;
 
-    CGChnSptr chain(new CGChain);
-    chain->read_block(ifs);
-    std::string input_sequence(chain->get_sequence());
-
-    std::string mutated_sequence;
-
-    if(input_sequence.size() < 80)
+    if(argc != 2)
     {
-        std::cout << "<<<< " << input_sequence << std::endl;
-        std::cout << ">>>> ";
-        std::cin >> mutated_sequence;
+        std::cout << "Usage : ./mutator <filename>.pdb (CG style)" << std::endl;
+        std::cout << std::endl;
+        return -1;
     }
-    else
+
+    const std::string prefix("out");
+    const std::string suffix(".pdb");
+
+    while(!ifs.eof())
     {
-        std::string test;
-        size_t current_pos(0);
-        std::string buffer;
-        for(int full_length(input_sequence.size()); full_length > 80; full_length -= 80)
+        CGChnSptr chain(new CGChain);
+        chain->read_block(ifs);
+        std::string input_sequence(chain->get_sequence());
+
+        char Chain_ID(chain->get_ChainID());
+        std::string outputfilename = prefix + Chain_ID + suffix;
+        std::ofstream ofs(outputfilename.c_str());
+
+        std::string mutated_sequence;
+
+        bool pass_chain(false);
+        if(input_sequence.size() < width_of_shell)
         {
-            std::cout << "<<<< " << input_sequence.substr(current_pos, 80) << std::endl;
+            std::cout << "<<<< " << input_sequence << std::endl;
             std::cout << ">>>> ";
-            std::cin  >> buffer;
-            mutated_sequence += buffer;
-            test += input_sequence.substr(current_pos, 80);
-            current_pos += 80;
+            std::cin >> mutated_sequence;
+            if(mutated_sequence == "pass")
+            {
+                pass_chain = true;
+            }
+            if(mutated_sequence == "end"  ||
+               mutated_sequence == "quit" ||
+               mutated_sequence == "bye")
+            {
+                std::cout << "quit" << std::endl;
+                break;
+            }
         }
-        std::cout << "<<<< " << input_sequence.substr(current_pos) << std::endl;
-        std::cout << ">>>> ";
-        std::cin  >> buffer;
-        mutated_sequence += buffer;
-        test += input_sequence.substr(current_pos);
-        if(test != input_sequence) throw std::invalid_argument("test != input_sequence");
+        else
+        {
+            std::string test;
+            size_t current_pos(0);
+            std::string buffer;
+
+            bool end_program(false);
+            for(int full_length(input_sequence.size());
+                full_length > width_of_shell;
+                full_length -= width_of_shell)
+            {
+                std::cout << "<<<< "
+                          << input_sequence.substr(current_pos, width_of_shell)
+                          << std::endl;
+                std::cout << ">>>> ";
+                std::cin  >> buffer;
+                if(buffer == "pass")
+                {
+                    pass_chain = true;
+                    break;//breaks "for sequence size" statement
+                }
+                if(buffer == "end" || buffer == "quit" || buffer == "bye")
+                {
+                    end_program = true;
+                    break;//breaks "for sequence size" statement
+                }
+
+                mutated_sequence += buffer;
+                test += input_sequence.substr(current_pos, width_of_shell);
+                current_pos += width_of_shell;
+            }
+
+            if(end_program)
+            {
+                std::cout << "quit" << std::endl;
+                break;//breaks "while !eof" statement
+            }
+            if(!pass_chain)
+            {
+                std::cout << "<<<< " << input_sequence.substr(current_pos)
+                          << std::endl;
+                std::cout << ">>>> ";
+                std::cin  >> buffer;
+
+                mutated_sequence += buffer;
+                test += input_sequence.substr(current_pos);
+                if(test != input_sequence)
+                    throw std::invalid_argument("test != input_sequence");
+            }
+        }
+
+        if(!pass_chain)
+        {
+            CGMutator mut(chain, mutated_sequence);
+            mut.mutateDNA();
+            std::cout << "mutation completed" << std::endl;
+            mut.output(ofs);
+            std::cout << "output completed ==> " << outputfilename << std::endl;
+        }
+        else
+        {
+            std::cout << "ChainID: " << Chain_ID << std::endl;
+            std::cout << "passed. " << std::endl;
+        }
     }
-
-    CGMutator mut(chain, mutated_sequence);
-    std::cout << "mutator constructed" << std::endl;
-    mut.mutateDNA();
-    std::cout << "mutation completed" << std::endl;
-    mut.output(ofs);
-    std::cout << "output completed" << std::endl;
-
     return 0;
 }
