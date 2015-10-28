@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <boost/regex.hpp>
 #include "CGBeads.hpp"
+#include "ProteinSeq.hpp"
 
 namespace arabica
 {
@@ -23,17 +24,18 @@ namespace arabica
         char ChainID;
         int iunit;
         std::vector<BeadSptr> residue;
+        ProteinSeq seqmap;
 
     public:
         CGChain(){}
 
-        CGChain(const BeadSptr& bead) : ChainID(bead->get_ChainID())
+        CGChain(const BeadSptr& bead) : ChainID(bead->get_ChainID()), seqmap()
         {
             residue.push_back(bead);
         }
 
         CGChain(std::vector<BeadSptr>& beads)
-            : ChainID(beads.at(0)->get_ChainID()), residue(beads)
+            : ChainID(beads.at(0)->get_ChainID()), residue(beads), seqmap()
         {
             ;
         }
@@ -170,9 +172,17 @@ namespace arabica
             else current_resseq = (*iter)->get_iResNum();
 
             if(boost::regex_search(seqname, seqdna))
-            {
+            {//DNA
                 size_t dpos(seqname.find('D'));
                 retval += seqname[dpos+1];
+            }
+            else if(seqmap.find(seqname))
+            {//protein
+                retval += seqmap.pseq_3to1(seqname);
+            }
+            else
+            {//unknown. RNA?
+                std::cout << "Unknown sequence: " << seqname << std::endl;
             }
         }
         return retval;

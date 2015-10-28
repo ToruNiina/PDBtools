@@ -5,6 +5,11 @@ int main(int argc, char *argv[])
 {
     const size_t width_of_shell(75);
     std::ifstream ifs(argv[1]);
+    if(ifs.fail())
+    {
+        std::cout << "file open error" << std::endl;
+        return -1;
+    }
 
     std::cout << "PDB CG(CafeMol) style Mutator" << std::endl;            
     std::cout << "please input sequence that you want." << std::endl;            
@@ -29,10 +34,6 @@ int main(int argc, char *argv[])
         CGChnSptr chain(new CGChain);
         chain->read_block(ifs);
         std::string input_sequence(chain->get_sequence());
-
-        char Chain_ID(chain->get_ChainID());
-        std::string outputfilename = prefix + Chain_ID + suffix;
-        std::ofstream ofs(outputfilename.c_str());
 
         std::string mutated_sequence;
 
@@ -105,8 +106,12 @@ int main(int argc, char *argv[])
             }
         }
 
+        char Chain_ID(chain->get_ChainID());
         if(!pass_chain)
         {
+            std::string outputfilename = prefix + Chain_ID + suffix;
+            std::ofstream ofs(outputfilename.c_str());
+
             CGMutator mut(chain, mutated_sequence);
             mut.mutateDNA();
             std::cout << "mutation completed" << std::endl;
