@@ -14,6 +14,7 @@ mutator outputs mutated DNA pdb file to "out.pdb" (cg style only)
 
 `$./mutator <filename>.pdb`
 
+NOTE: mutator can read only one block. If you have more than one DNA strand to change the sequence (eg, double strand DNA), please prepare the complemental sequence and separate input CG pdb file into files include only one block that contain only one strand. I will implove this defect soon.
 
 ###Reference
 
