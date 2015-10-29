@@ -8,47 +8,44 @@ namespace arabica
     {
         std::string mutated_seq;
 
+        ProteinSeq seqmap;
         CGChnSptr input;
         CGChnSptr mutated;
 
     public:
 
-        CGMutator(CGChnSptr chain): input(chain) {}
+        CGMutator(CGChnSptr chain)
+            : input(chain), seqmap() {}
         CGMutator(CGChnSptr chain, std::string seq)
-            : input(chain), mutated_seq(seq) {}
+            : input(chain), mutated_seq(seq), seqmap() {}
         ~CGMutator(){}
 
         void set_seq(std::string seq){mutated_seq = seq;}
         std::string get_seq() const {return mutated_seq;}
 
-        void mutateDNA();
+        void mutate();
         void output(std::ofstream& ofs){mutated->write_block(ofs);}
 
     private:
 
         void no_mut(std::vector<BeadSptr>::iterator& iter,
                     std::vector<BeadSptr>::iterator& end);
-        void mut_to_A(std::vector<BeadSptr>::iterator& iter,
-                      std::vector<BeadSptr>::iterator& end);
-        void mut_to_C(std::vector<BeadSptr>::iterator& iter,
-                      std::vector<BeadSptr>::iterator& end);
-        void mut_to_G(std::vector<BeadSptr>::iterator& iter,
-                      std::vector<BeadSptr>::iterator& end);
-        void mut_to_T(std::vector<BeadSptr>::iterator& iter,
-                      std::vector<BeadSptr>::iterator& end);
-        void mut_prot(const char aacode,
-                      std::vector<BeadSptr>::iterator& start,
-                      std::vector<BeadSptr>::iterator& end);
+        void mut_DNA(const char base,
+                     std::vector<BeadSptr>::iterator& iter,
+                     std::vector<BeadSptr>::iterator& end);
+        void mut_PRO(const char aacode,
+                    std::vector<BeadSptr>::iterator& iter,
+                    std::vector<BeadSptr>::iterator& end);
     };
 
-    void CGMutator::mutateDNA()
+    void CGMutator::mutate()
     {
         if(mutated_seq.empty())
         {
             std::cout << "CGMutator has no input sequence" << std::endl;
             throw std::invalid_argument("invalid sequence");
         }
-        
+
         std::vector<BeadSptr> chain(input->get_chain());
 
         if(mutated_seq.size() != input->get_ResNum())
@@ -64,28 +61,41 @@ namespace arabica
 
         std::vector<BeadSptr>::iterator iter = chain.begin();
         std::vector<BeadSptr>::iterator end = chain.end();
+        MOLECULE_TYPE mol_type = input->get_moltype();
 
-        for(size_t current_seq(0); current_seq < mutated_seq.size();
-                ++current_seq)
+        if(mol_type == DNA)
         {
-            switch(mutated_seq[current_seq])
+            for(size_t current_seq(0); current_seq < mutated_seq.size();
+                    ++current_seq)
             {
-            case '=':
-                no_mut(iter, end);
-                break;
-            case 'A':
-                mut_to_A(iter, end);
-                break;
-            case 'C':
-                mut_to_C(iter, end);
-                break;
-            case 'G':
-                mut_to_G(iter, end);
-                break;
-            case 'T':
-                mut_to_T(iter, end);
-                break;
+                char mut_residue = mutated_seq[current_seq];
+                switch(mut_residue)
+                {
+                    case '=':
+                        no_mut(iter, end);
+                        break;
+                    default:
+                        mut_DNA(mut_residue, iter, end);
+                        break;
+                }
             }
+        }
+        else if(mol_type == PROTEIN)
+        {
+            for(size_t current_seq(0); current_seq < mutated_seq.size();
+                    ++current_seq)
+            {
+                char mut_residue = mutated_seq[current_seq];
+                switch(mut_residue)
+                {
+                    case '=':
+                        no_mut(iter, end);
+                        break;
+                    default:
+                        mut_PRO(mut_residue, iter, end);
+                        break;
+                }
+            }           
         }
 
         mutated = std::shared_ptr<CGChain>(new CGChain(chain));
@@ -110,9 +120,29 @@ namespace arabica
         }
     }
 
-    void CGMutator::mut_to_A(std::vector<BeadSptr>::iterator& iter,
-                             std::vector<BeadSptr>::iterator& end)
+    void CGMutator::mut_DNA(const char base,
+                            std::vector<BeadSptr>::iterator& iter,
+                            std::vector<BeadSptr>::iterator& end)
     {
+        std::string mutres;
+        switch(base)
+        {
+            case 'A':
+                mutres = "DA";
+                break;
+            case 'C':
+                mutres = "DC";
+                break;
+            case 'G':
+                mutres = "DG";
+                break;
+            case 'T':
+                mutres = "DT";
+                break;
+            default:
+                throw std::invalid_argument("mut_DNA: unknown base");
+        }
+
         int residue_number((*iter)->get_iResNum());
         while(true)
         {
@@ -120,7 +150,7 @@ namespace arabica
 
             if((*iter)->get_iResNum() == residue_number)
             {
-                (*iter)->set_seq("DA");
+                (*iter)->set_seq(mutres);
                 if(iter != end) ++iter;
             }else{
                 return;
@@ -128,9 +158,12 @@ namespace arabica
         }
     }
 
-    void CGMutator::mut_to_C(std::vector<BeadSptr>::iterator& iter,
-                             std::vector<BeadSptr>::iterator& end)
+    void CGMutator::mut_PRO(const char aacode,
+                            std::vector<BeadSptr>::iterator& iter,
+                            std::vector<BeadSptr>::iterator& end)
     {
+        std::string mutres(seqmap.pseq_1to3(aacode));
+
         int residue_number((*iter)->get_iResNum());
         while(true)
         {
@@ -138,49 +171,12 @@ namespace arabica
 
             if((*iter)->get_iResNum() == residue_number)
             {
-                (*iter)->set_seq("DC");
+                (*iter)->set_seq(mutres);
                 if(iter != end) ++iter;
             }else{
                 return;
             }
         }
     }
-
-    void CGMutator::mut_to_G(std::vector<BeadSptr>::iterator& iter,
-                             std::vector<BeadSptr>::iterator& end)
-    {
-        int residue_number((*iter)->get_iResNum());
-        while(true)
-        {
-            if(iter == end) return;
-
-            if((*iter)->get_iResNum() == residue_number)
-            {
-                (*iter)->set_seq("DG");
-                if(iter != end) ++iter;
-            }else{
-                return;
-            }
-        }
-    }
-
-    void CGMutator::mut_to_T(std::vector<BeadSptr>::iterator& iter,
-                             std::vector<BeadSptr>::iterator& end)
-    {
-        int residue_number((*iter)->get_iResNum());
-        while(true)
-        {
-            if(iter == end) return;
-
-            if((*iter)->get_iResNum() == residue_number)
-            {
-                (*iter)->set_seq("DT");
-                if(iter != end) ++iter;
-            }else{
-                return;
-            }
-        }
-    }
-
 }
 #endif//ARABICA_CG_MUTATOR

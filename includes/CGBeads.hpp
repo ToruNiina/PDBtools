@@ -96,8 +96,8 @@ namespace arabica
 
     std::ostream& operator<<(std::ostream& os, const CGBead& a)
     {
-        os << std::setw(6) << a.head;
-        os << std::setw(5) << a.imp;
+        os << std::setw(6) << std::left << a.head;
+        os << std::setw(5) << std::right<< a.imp;
         os << std::setw(4) << a.bead;
         os << std::setw(4) << a.seq;
         os << std::setw(3) << a.ChainID;

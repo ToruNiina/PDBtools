@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
             std::ofstream ofs(outputfilename.c_str());
 
             CGMutator mut(chain, mutated_sequence);
-            mut.mutateDNA();
+            mut.mutate();
             std::cout << "mutation completed" << std::endl;
             mut.output(ofs);
             std::cout << "output completed ==> " << outputfilename << std::endl;
