@@ -14,7 +14,8 @@ namespace arabica
     public:
 
         CGMutator(CGChnSptr chain): input(chain) {}
-        CGMutator(CGChnSptr chain, std::string seq): input(chain), mutated_seq(seq) {}
+        CGMutator(CGChnSptr chain, std::string seq)
+            : input(chain), mutated_seq(seq) {}
         ~CGMutator(){}
 
         void set_seq(std::string seq){mutated_seq = seq;}
@@ -25,16 +26,23 @@ namespace arabica
 
     private:
 
-        void no_mut(std::vector<BeadSptr>::iterator& iter, std::vector<BeadSptr>::iterator& end);
-        void mut_to_A(std::vector<BeadSptr>::iterator& iter, std::vector<BeadSptr>::iterator& end);
-        void mut_to_C(std::vector<BeadSptr>::iterator& iter, std::vector<BeadSptr>::iterator& end);
-        void mut_to_G(std::vector<BeadSptr>::iterator& iter, std::vector<BeadSptr>::iterator& end);
-        void mut_to_T(std::vector<BeadSptr>::iterator& iter, std::vector<BeadSptr>::iterator& end);
+        void no_mut(std::vector<BeadSptr>::iterator& iter,
+                    std::vector<BeadSptr>::iterator& end);
+        void mut_to_A(std::vector<BeadSptr>::iterator& iter,
+                      std::vector<BeadSptr>::iterator& end);
+        void mut_to_C(std::vector<BeadSptr>::iterator& iter,
+                      std::vector<BeadSptr>::iterator& end);
+        void mut_to_G(std::vector<BeadSptr>::iterator& iter,
+                      std::vector<BeadSptr>::iterator& end);
+        void mut_to_T(std::vector<BeadSptr>::iterator& iter,
+                      std::vector<BeadSptr>::iterator& end);
+        void mut_prot(const char aacode,
+                      std::vector<BeadSptr>::iterator& start,
+                      std::vector<BeadSptr>::iterator& end);
     };
 
     void CGMutator::mutateDNA()
     {
-        //only mutation. TODO insertion, elongation, deletion is not spported yet.
         if(mutated_seq.empty())
         {
             std::cout << "CGMutator has no input sequence" << std::endl;
@@ -50,15 +58,16 @@ namespace arabica
             std::cout << "mut    : " << mutated_seq << std::endl;
             std::cout << "input  : " << input->get_sequence() << std::endl;
             
-            throw std::invalid_argument("length of sequene and chain size is not equal");
+            throw std::invalid_argument(
+                    "length of sequene and chain size is not equal");
         }
 
         std::vector<BeadSptr>::iterator iter = chain.begin();
         std::vector<BeadSptr>::iterator end = chain.end();
 
-        for(size_t current_seq(0); current_seq < mutated_seq.size(); ++current_seq)
+        for(size_t current_seq(0); current_seq < mutated_seq.size();
+                ++current_seq)
         {
-//             std::cout << mutated_seq[current_seq] << std::endl;
             switch(mutated_seq[current_seq])
             {
             case '=':
@@ -84,7 +93,8 @@ namespace arabica
         return;
     }
 
-    void CGMutator::no_mut(std::vector<BeadSptr>::iterator& iter, std::vector<BeadSptr>::iterator& end)
+    void CGMutator::no_mut(std::vector<BeadSptr>::iterator& iter,
+                           std::vector<BeadSptr>::iterator& end)
     {
         int residue_number((*iter)->get_iResNum());
         while(true)
@@ -100,7 +110,8 @@ namespace arabica
         }
     }
 
-    void CGMutator::mut_to_A(std::vector<BeadSptr>::iterator& iter, std::vector<BeadSptr>::iterator& end)
+    void CGMutator::mut_to_A(std::vector<BeadSptr>::iterator& iter,
+                             std::vector<BeadSptr>::iterator& end)
     {
         int residue_number((*iter)->get_iResNum());
         while(true)
@@ -117,7 +128,8 @@ namespace arabica
         }
     }
 
-    void CGMutator::mut_to_C(std::vector<BeadSptr>::iterator& iter, std::vector<BeadSptr>::iterator& end)
+    void CGMutator::mut_to_C(std::vector<BeadSptr>::iterator& iter,
+                             std::vector<BeadSptr>::iterator& end)
     {
         int residue_number((*iter)->get_iResNum());
         while(true)
@@ -134,7 +146,8 @@ namespace arabica
         }
     }
 
-    void CGMutator::mut_to_G(std::vector<BeadSptr>::iterator& iter, std::vector<BeadSptr>::iterator& end)
+    void CGMutator::mut_to_G(std::vector<BeadSptr>::iterator& iter,
+                             std::vector<BeadSptr>::iterator& end)
     {
         int residue_number((*iter)->get_iResNum());
         while(true)
@@ -151,7 +164,8 @@ namespace arabica
         }
     }
 
-    void CGMutator::mut_to_T(std::vector<BeadSptr>::iterator& iter, std::vector<BeadSptr>::iterator& end)
+    void CGMutator::mut_to_T(std::vector<BeadSptr>::iterator& iter,
+                             std::vector<BeadSptr>::iterator& end)
     {
         int residue_number((*iter)->get_iResNum());
         while(true)

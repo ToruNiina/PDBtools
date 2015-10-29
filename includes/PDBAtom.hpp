@@ -96,18 +96,18 @@ namespace arabica
 
     void PDBAtom::read_line(std::string line)
     {
-        this->serial     = stoi( line.substr(6, 5) );
+        this->serial     = stoi(line.substr(6, 5));
         this->name       = line.substr(12, 4);
         this->altLoc     = line[16];
         this->resName    = line.substr(17,3);
         this->chainID    = line[21];
-        this->resSeq     = stoi( line.substr(22, 4) );
+        this->resSeq     = stoi(line.substr(22, 4));
         this->iCode      = line[26];
-        this->x          = stod(line.substr(30, 8) );
-        this->y          = stod(line.substr(38, 8) );
-        this->z          = stod(line.substr(46, 8) );
-        this->occupancy  = stod(line.substr(54, 6) );
-        this->tempFactor = stod(line.substr(60, 6) );
+        this->x          = stod(line.substr(30, 8));
+        this->y          = stod(line.substr(38, 8));
+        this->z          = stod(line.substr(46, 8));
+        this->occupancy  = stod(line.substr(54, 6));
+        this->tempFactor = stod(line.substr(60, 6));
         this->element    = line.substr(76,2);
         this->charge     = line.substr(78,2);
 

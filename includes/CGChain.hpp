@@ -8,22 +8,13 @@
 
 namespace arabica
 {
-    enum CG_LINE_TYPE
-    {
-        ATOM,
-        HEATOM,
-        CHAIN,
-        ENDCHN,
-        MODEL,
-        ENDMDL,
-        UNKNOWN
-    };
-
     class CGChain
     {
+        MOLECULE_TYPE mol_type;
         char ChainID;
         int iunit;
         std::vector<BeadSptr> residue;
+        std::string sequence;
         ProteinSeq seqmap;
 
     public:
@@ -54,10 +45,12 @@ namespace arabica
         char get_ChainID() const {return ChainID;}
         int get_iunit() const {return iunit;}
         int get_ResNum() const {return (*(residue.end()-1))->get_iResNum();}
-        std::string get_sequence();
+        std::string get_sequence() const {return sequence;}
+        MOLECULE_TYPE get_moltype() const {return mol_type;}
 
     private:
 
+        void read_sequence();
         
     };
 
@@ -100,13 +93,14 @@ namespace arabica
             {
                 if(block_found)
                     throw std::invalid_argument(
-                            "CG PDB block does not close correctly");
+                            "CG PDB block is not closed correctly");
                 block_found = true;
                 continue;
             }
 
             if(line.substr(0,2) == ">>")
             {
+                read_sequence();
                 return;
             }
 
@@ -116,7 +110,7 @@ namespace arabica
                 {
                     std::cout << "ENDMDL found." << std::endl;
                     throw std::invalid_argument(
-                            "CG PDB block does not close correctly");
+                            "CG PDB block is not closed correctly");
                 }
             }
 
@@ -126,7 +120,7 @@ namespace arabica
                 {
                     std::cout << "MODEL found." << std::endl;
                     throw std::invalid_argument(
-                            "CG PDB block does not close correctly");
+                            "CG PDB block is not closed correctly");
                 }
             }
 #ifdef _DEBUG
@@ -139,6 +133,7 @@ namespace arabica
             std::cout << "cannot find end of block >>" << std::endl;
             throw std::invalid_argument("CG PDB block does not close correctly");
         }
+        read_sequence();
         return;
     }
 
@@ -158,34 +153,43 @@ namespace arabica
         return;
     }
 
-    std::string CGChain::get_sequence()
+    void CGChain::read_sequence()
     {
-        std::string retval;
+        if(!sequence.empty())
+        {
+            std::cout << "Warning: trying to re-read sequence. do nothing."
+                      << std::endl;
+            return;
+        }
+
         int current_resseq(-1);
         for(std::vector<BeadSptr>::iterator iter = residue.begin();
             iter != residue.end(); ++iter)
         {
             boost::regex seqdna("D[ACGT]");
-            std::string seqname( (*iter)->get_seq() );
+            std::string seqname((*iter)->get_seq());
 
             if(current_resseq == (*iter)->get_iResNum()) continue;
             else current_resseq = (*iter)->get_iResNum();
 
             if(boost::regex_search(seqname, seqdna))
             {//DNA
+                mol_type = DNA;
                 size_t dpos(seqname.find('D'));
-                retval += seqname[dpos+1];
+                sequence += seqname[dpos+1];
             }
             else if(seqmap.find(seqname))
             {//protein
-                retval += seqmap.pseq_3to1(seqname);
+                mol_type = PROTEIN;
+                sequence += seqmap.pseq_3to1(seqname);
             }
             else
             {//unknown. RNA?
+                mol_type = UNKNOWN;
                 std::cout << "Unknown sequence: " << seqname << std::endl;
             }
         }
-        return retval;
+        return;
     }
 
     typedef std::shared_ptr<CGChain> CGChnSptr;

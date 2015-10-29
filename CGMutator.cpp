@@ -49,6 +49,7 @@ int main(int argc, char *argv[])
             }
             if(mutated_sequence == "end"  ||
                mutated_sequence == "quit" ||
+               mutated_sequence == "exit" ||
                mutated_sequence == "bye")
             {
                 std::cout << "quit" << std::endl;
@@ -76,7 +77,8 @@ int main(int argc, char *argv[])
                     pass_chain = true;
                     break;//breaks "for sequence size" statement
                 }
-                if(buffer == "end" || buffer == "quit" || buffer == "bye")
+                if(buffer == "end" || buffer == "quit" ||
+                   buffer == "exit" || buffer == "bye")
                 {
                     end_program = true;
                     break;//breaks "for sequence size" statement

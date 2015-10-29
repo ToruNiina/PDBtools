@@ -6,6 +6,7 @@
 #include <iomanip>
 #include <string>
 #include <memory>
+#include "PDBdef.hpp"
 
 namespace arabica
 {
@@ -73,14 +74,14 @@ namespace arabica
         ls >> head >> imp >> bead >> seq >> ChainID >> iResNum;
         ls >> x >> y >> z;
 //         this->head       = line.substr(0,6);
-//         this->imp        = std::stoi( line.substr(6,5) );
+//         this->imp        = std::stoi(line.substr(6,5));
 //         this->bead       = line.substr(11,4);
 //         this->seq        = line.substr(16,4);
 //         this->ChainID    = line.at(21);
-//         this->iResNum    = std::stoi( line.substr(22,4) );
-//         this->x          = std::stod(line.substr(30, 8) );
-//         this->y          = std::stod(line.substr(38, 8) );
-//         this->z          = std::stod(line.substr(46, 8) );
+//         this->iResNum    = std::stoi(line.substr(22, 4));
+//         this->x          = std::stod(line.substr(30, 8));
+//         this->y          = std::stod(line.substr(38, 8));
+//         this->z          = std::stod(line.substr(46, 8));
 
         return;
     }
