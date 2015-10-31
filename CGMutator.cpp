@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
             }
         }
 
-        char Chain_ID(chain->get_ChainID());
+        char Chain_ID(chain->get_chainID());
         if(!pass_chain)
         {
             std::string outputfilename = prefix + Chain_ID + suffix;
@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
         }
         else
         {
-            std::cout << "ChainID: " << Chain_ID << std::endl;
+            std::cout << "chainID: " << Chain_ID << std::endl;
             std::cout << "passed. " << std::endl;
         }
     }

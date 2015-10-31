@@ -10,23 +10,26 @@ namespace arabica
 {
     class CGChain
     {
+        bool there_is_chain;
         MOLECULE_TYPE mol_type;
-        char ChainID;
+        char chainID;
         int iunit;
         std::vector<BeadSptr> residue;
         std::string sequence;
         ProteinSeq seqmap;
 
     public:
-        CGChain(){}
+        CGChain(): there_is_chain(false){}
 
-        CGChain(const BeadSptr& bead) : ChainID(bead->get_ChainID()), seqmap()
+        CGChain(const BeadSptr& bead)
+            : chainID(bead->get_chainID()), seqmap(), there_is_chain(true)
         {
             residue.push_back(bead);
         }
 
         CGChain(std::vector<BeadSptr>& beads)
-            : ChainID(beads.at(0)->get_ChainID()), residue(beads), seqmap()
+            : chainID(beads.at(0)->get_chainID()), residue(beads),
+              seqmap(), there_is_chain(true)
         {
             ;
         }
@@ -42,11 +45,12 @@ namespace arabica
 
         void sort_imp();
 
-        char get_ChainID() const {return ChainID;}
+        char get_chainID() const {return chainID;}
         int get_iunit() const {return iunit;}
         int get_ResNum() const {return (*(residue.end()-1))->get_iResNum();}
         std::string get_sequence() const {return sequence;}
         MOLECULE_TYPE get_moltype() const {return mol_type;}
+        bool is_there_chain() const {return there_is_chain;}
 
     private:
 
@@ -56,11 +60,17 @@ namespace arabica
 
     void CGChain::push_back(BeadSptr& bead)
     {
-        if(bead->get_ChainID() != ChainID)
+        if(!there_is_chain)
         {
-            std::cout << "Error: trying to push_back bead having different ChainID"
+            there_is_chain = true;
+            chainID = bead->get_chainID();
+        }
+
+        if(bead->get_chainID() != chainID)
+        {
+            std::cout << "Error: trying to push_back bead having different chainID"
                       << std::endl;
-            throw std::invalid_argument("invalid ChainID");
+            throw std::invalid_argument("invalid chainID");
         }
         residue.push_back(bead);
         return;
@@ -82,7 +92,7 @@ namespace arabica
                 bead->get_line(line);
                 if(!read_id)
                 {
-                    ChainID = bead->get_ChainID();
+                    chainID = bead->get_chainID();
                     read_id = true;
                 }
                 push_back(bead);

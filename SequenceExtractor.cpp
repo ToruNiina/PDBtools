@@ -22,8 +22,12 @@ int main(int argc, char* argv[])
         {
             CGChain chain;
             chain.read_block(pdbfile);
-            std::cout << chain.get_sequence() << std::endl;
-            std::cout << "TER" << std::endl;
+
+            if(chain.is_there_chain())
+            {
+                std::cout << "Chain " << chain.get_chainID() << " : ";
+                std::cout << chain.get_sequence() << std::endl;
+            }
         }
     }
     else
@@ -39,7 +43,6 @@ int main(int argc, char* argv[])
             {
                 std::cout << "Chain " << chain.get_chainID() << " : ";
                 std::cout << chain.get_sequence() << std::endl;
-                std::cout << "TER" << std::endl;
             }
         }
     }

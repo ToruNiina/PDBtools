@@ -12,7 +12,7 @@ namespace arabica
 {
     class CGBead
     {
-        char ChainID;
+        char chainID;
         int imp;//mass particle number
         int iResNum;//residue sequence number
         double x, y, z;
@@ -26,7 +26,7 @@ namespace arabica
 
         void get_line(std::string& line);
 
-        char        get_ChainID()  const {return ChainID;}
+        char        get_chainID()  const {return chainID;}
         int         get_imp()      const {return imp;}
         int         get_iResNum()  const {return iResNum;}
         double      get_coordx()   const {return x;}
@@ -35,7 +35,7 @@ namespace arabica
         std::string get_beadname() const {return bead;}
         std::string get_seq()      const {return seq;}
 
-        void set_ChainID (char id)       {ChainID = id;}
+        void set_chainID (char id)       {chainID = id;}
         void set_imp     (int im)        {imp = im;}
         void set_iResNum (int rn)        {iResNum = rn;}
         void set_coordx  (double _x)     {x = _x;}
@@ -71,13 +71,13 @@ namespace arabica
     void CGBead::line_input(std::string line)
     {
         std::istringstream ls(line);
-        ls >> head >> imp >> bead >> seq >> ChainID >> iResNum;
+        ls >> head >> imp >> bead >> seq >> chainID >> iResNum;
         ls >> x >> y >> z;
 //         this->head       = line.substr(0,6);
 //         this->imp        = std::stoi(line.substr(6,5));
 //         this->bead       = line.substr(11,4);
 //         this->seq        = line.substr(16,4);
-//         this->ChainID    = line.at(21);
+//         this->chainID    = line.at(21);
 //         this->iResNum    = std::stoi(line.substr(22, 4));
 //         this->x          = std::stod(line.substr(30, 8));
 //         this->y          = std::stod(line.substr(38, 8));
@@ -100,7 +100,7 @@ namespace arabica
         os << std::setw(5) << std::right<< a.imp;
         os << std::setw(4) << a.bead;
         os << std::setw(4) << a.seq;
-        os << std::setw(3) << a.ChainID;
+        os << std::setw(3) << a.chainID;
         os << std::setw(4) << a.iResNum;
         os << "    ";
         os << std::setw(8) << std::fixed << std::setprecision(3) << a.x;

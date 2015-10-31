@@ -39,7 +39,7 @@ namespace arabica
         if(!atoms.empty() && atom->get_chainID() != chainID)
         {
             std::cout << "Error: push_back different chainID atom" << std::endl;
-            throw std::invalid_argument("invalid chain ID");
+            throw std::invalid_argument("invalid Chain ID");
         }
         atoms.push_back(atom);
         return;

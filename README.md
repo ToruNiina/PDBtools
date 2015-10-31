@@ -6,7 +6,7 @@ arabica is a name of one of the coffee trees.
 
 ###Usage
 
-seqextr outputs DNA sequence in pdb file
+seqextr outputs DNA and amino acid sequence in pdb file
 
 `$./seqextr [option: -cg] <filename>.pdb`
 
