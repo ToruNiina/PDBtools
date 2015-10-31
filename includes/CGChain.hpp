@@ -145,11 +145,13 @@ namespace arabica
 
     void CGChain::write_block(std::ofstream& ofs)
     {
+        ofs << "<< protein_ " << std::endl;
         for(std::vector<BeadSptr>::iterator iter = residue.begin();
             iter != residue.end(); ++iter)
         {
             ofs << *(*iter) << std::endl;
         }
+        ofs << ">>" << std::endl;
         return;
     }
 

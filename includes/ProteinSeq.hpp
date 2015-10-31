@@ -1,11 +1,12 @@
 #ifndef ARABICA_PROTEIN_SEQUENCE
 #define ARABICA_PROTEIN_SEQUENCE
-#include <string>
 #include <map>
+#include <string>
+#include <algorithm>
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <boost/regex.hpp>
+#include <cctype>
 
 namespace arabica
 {
@@ -53,15 +54,20 @@ namespace arabica
 
     char ProteinSeq::pseq_3to1(const std::string& aacode) const
     {
-        return sequence_map.at(aacode);
-    }
+        std::string capital;
+        capital.resize(aacode.size());
+        std::transform(aacode.cbegin(), aacode.cend(),
+                       capital.begin(), toupper);
+        return sequence_map.at(capital);
+    }//return 1 letter code in capital
 
     std::string ProteinSeq::pseq_1to3(const char aacode)
     {
+        char capital(toupper(aacode));
         for(std::map<std::string, char>::iterator iter = sequence_map.begin();
             iter != sequence_map.end(); ++iter)
         {
-            if((*iter).second == aacode) return (*iter).first;
+            if((*iter).second == capital) return (*iter).first;
         }
         std::cout << "unknown code: " << aacode << std::endl;
         throw std::invalid_argument("unknown amino acid 1 letter code");
@@ -69,7 +75,12 @@ namespace arabica
 
     bool ProteinSeq::find(const std::string& aacode)
     {
-        std::map<std::string, char>::iterator iter = sequence_map.find(aacode);
+        std::string capital;
+        capital.resize(aacode.size());
+        std::transform(aacode.cbegin(), aacode.cend(),
+                       capital.begin(), toupper);
+
+        std::map<std::string, char>::iterator iter = sequence_map.find(capital);
         return (iter != sequence_map.end());
     }
 
