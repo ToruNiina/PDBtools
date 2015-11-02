@@ -107,7 +107,11 @@ namespace arabica
         char *cbytes = new char[size_int];
         dcdfile.read(cbytes, size_int);
         int byte = *reinterpret_cast<int*>(cbytes);
-        std::cout << "header block 1 : " << byte << "bytes" << std::endl;
+        if(byte != 84)
+        {
+            std::cout << "this file may not be cafemol output." << std::endl;
+            std::cout << "header block 1 : " << byte << "bytes" << std::endl;
+        }
         delete [] cbytes;
 
         char *ccord = new char [4];
@@ -150,7 +154,8 @@ namespace arabica
         delete [] cnstep;
 
         std::cout << "nstep: " << nstep << std::endl;
-        std::cout << "number of saved snapshot: " << nstep / nstep_save << std::endl;
+        std::cout << "number of saved snapshot: "
+                  << nstep / nstep_save << std::endl;
 
         char *cnunit = new char[size_int];
         dcdfile.read(cnunit, size_int);
@@ -161,10 +166,13 @@ namespace arabica
         dcdfile.read(null_1, 16);
         delete [] null_1;
         
-        char cdelta[size_int];
+        char *cdelta = new char[size_int];
         dcdfile.read(cdelta, size_int);
         float fdelta = *(float*)(cnunit);
         delta_t = static_cast<double>(fdelta);
+        delete [] cdelta;
+
+        std::cout << "delta t: " << delta_t << std::endl;
 
         char *null_2 = new char[36];
         dcdfile.read(null_2, 36);
@@ -179,7 +187,8 @@ namespace arabica
         dcdfile.read(cbytes_f, size_int);
         if(byte != *reinterpret_cast<int*>(cbytes_f))
         {
-            std::cout << "Warning: header block1 is invalid" << std::endl;
+            throw std::invalid_argument(
+                    "header block1 has invalid size information");
         }
         delete cbytes_f;
         return;
@@ -195,12 +204,14 @@ namespace arabica
         char *clines = new char[size_int];
         dcdfile.read(clines, size_int);
         int lines = *reinterpret_cast<int*>(clines);
-        std::cout << "there are " << lines << "lines exist" << std::endl;
         delete [] clines;
 
         if((80 * lines + 4) != bytes)
         {
-            std::cout << "Warning: header block2 has invalid size" << std::endl;
+            std::cout << "Warning: header block2 size = "
+                      << bytes << "bytes." << std::endl;
+            std::cout << "block2 has " << lines << "lines" << std::endl;
+            throw std::invalid_argument("header block2 has invalid size");
         }
 
         std::cout << "header: " << std::endl;
@@ -216,11 +227,10 @@ namespace arabica
         dcdfile.read(cbytes_f, size_int);
         if(bytes != *reinterpret_cast<int*>(cbytes_f))
         {
-            std::cout << "Warning: header block2 has invalid size information"
-                      << std::endl;
+            throw std::invalid_argument(
+                    "header block2 has invalid size information");
         }
         delete [] cbytes_f;
-
     }
 
     void DCDReader::read_head_block3()
@@ -235,16 +245,17 @@ namespace arabica
         nparticle = *reinterpret_cast<int*>(cnpart);
         delete [] cnpart;
 
-        std::cout << "there are " << nparticle << " particles in this file" << std::endl;
+        std::cout << "there are " << nparticle
+                  << " particles in this file" << std::endl;
 
         char *cbytes_f = new char[size_int];
         dcdfile.read(cbytes_f, size_int);
         if(bytes != *reinterpret_cast<int*>(cbytes_f))
         {
-            std::cout << "Warning: header block2 has invalid size information"
-                      << std::endl;
+            throw std::invalid_argument(
+                    "header block3 has invalid size information");
         }
-        std::cout << "header block3 reading completed" << std::endl;
+        delete [] cbytes_f;
         return;
     }
 
@@ -267,13 +278,7 @@ namespace arabica
             }
 
             data.push_back(temp_snapshot);
-            if(i % 1000 == 0)
-            {
-                std::cout << i << "step read" << std::endl;
-            }
         }
-
-        std::cout <<"data size: " << data.size() <<std::endl;
 
         return;
     }
@@ -286,8 +291,13 @@ namespace arabica
         if(bytes / size_int != nparticle)
         {
             std::cout << "Warning: "
-                      << "dcd file x coordinate has invalid byte-information"
+                      << "dcd file x coordinate has "
+                      << bytes << "bytes but nparticle is"
+                      << nparticle << ", and sizeof int is"
+                      << size_int
                       << std::endl;
+            throw std::invalid_argument(
+                    "x coordinate block has invalid byte-information");
         }
         delete [] cbytes;
 
@@ -309,7 +319,7 @@ namespace arabica
                       << "dcd file x coordinate header-byte-information "
                       << "is not same number as footer-byte-information"
                       <<std::endl;
-            throw std::invalid_argument("stop");
+            throw std::invalid_argument("x block has invalid byte-information");
         }
         delete [] cbytes_f;
 
@@ -324,8 +334,13 @@ namespace arabica
         if(bytes / size_int != nparticle)
         {
             std::cout << "Warning: "
-                      << "dcd file x coordinate has invalid byte-information"
+                      << "dcd file y coordinate has "
+                      << bytes << "bytes but nparticle is"
+                      << nparticle << ", and sizeof int is"
+                      << size_int
                       << std::endl;
+            throw std::invalid_argument(
+                    "y coordinate block has invalid byte-information");
         }
         delete [] cbytes;
 
@@ -344,10 +359,10 @@ namespace arabica
         if(bytes != *reinterpret_cast<int*>(cbytes_f))
         {
             std::cout << "Warning: "
-                      << "dcd file x coordinate header-byte-information "
+                      << "dcd file y coordinate header-byte-information "
                       << "is not same number as footer-byte-information"
                       <<std::endl;
-            throw std::invalid_argument("stop");
+            throw std::invalid_argument("y block has invalid byte-information");
         }
         delete [] cbytes_f;
 
@@ -362,9 +377,13 @@ namespace arabica
         if(bytes / size_int != nparticle)
         {
             std::cout << "Warning: "
-                      << "dcd file x coordinate has invalid byte-information"
+                      << "dcd file z coordinate has "
+                      << bytes << "bytes but nparticle is"
+                      << nparticle << ", and sizeof int is"
+                      << size_int
                       << std::endl;
-            throw std::invalid_argument("stop");
+            throw std::invalid_argument(
+                    "z coordinate block has invalid byte-information");
         }
         delete [] cbytes;
 
@@ -383,10 +402,10 @@ namespace arabica
         if(bytes != *reinterpret_cast<int*>(cbytes_f))
         {
             std::cout << "Warning: "
-                      << "dcd file x coordinate header-byte-information "
+                      << "dcd file z coordinate header-byte-information "
                       << "is not same number as footer-byte-information"
                       <<std::endl;
-            throw std::invalid_argument("stop");
+            throw std::invalid_argument("z block has invalid byte-information");
         }
         delete [] cbytes_f;
 
