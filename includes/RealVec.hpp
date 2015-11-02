@@ -3,7 +3,7 @@
 #include <array>
 #include <iostream>
 #include <iomanip>
-// #include "ExpTenplate.hpp"
+#include "VectorExTen.hpp"
 
 namespace arabica
 {
@@ -40,13 +40,66 @@ namespace arabica
                 return values[i];
             }
 
+            double operator[](int i) const
+            {
+                return values[i];
+            }
+
+            template <class E>
+            Realvec& operator=(const E& rhs)
+            {
+                values[0] = rhs[0];
+                values[1] = rhs[1];
+                values[2] = rhs[2];
+                return *this;
+            }
+
+            template <class E>
+            Realvec& operator+=(const E& rhs)
+            {
+                *this = add<Realvec, E>(*this, rhs);
+                return *this;
+            }
+
+            template <class E>
+            Realvec& operator-=(const E& rhs)
+            {
+                *this = sub<Realvec, E>(*this, rhs);
+                return *this;
+            }
+
     };
+
+    template <class L, class R>
+    add<L, R> operator+(const L& lhs, const R& rhs)
+    {
+        return add<L,R>(lhs, rhs);
+    }
+
+    template <class L, class R>
+    sub<L, R> operator-(const L& lhs, const R& rhs)
+    {
+        return sub<L,R>(lhs, rhs);
+    }
+
+    template <class L>
+    Realvec operator*(const L& lhs, const double rhs)
+    {
+        return Realvec(lhs[0]*rhs, lhs[1]*rhs, lhs[2]*rhs);
+    }
+
+    template <class L>
+    Realvec operator/(const L& lhs, const double rhs)
+    {
+        return Realvec(lhs[0]/rhs, lhs[1]/rhs, lhs[2]/rhs);
+    }
 
     std::ostream& operator<<(std::ostream& os, const Realvec& rv)
     {
+        os << "(";
         os << std::setprecision(16) << rv.values[0] << " ";
         os << std::setprecision(16) << rv.values[1] << " ";
-        os << std::setprecision(16) << rv.values[2];
+        os << std::setprecision(16) << rv.values[2] << ")";
         return os;
     }
 
