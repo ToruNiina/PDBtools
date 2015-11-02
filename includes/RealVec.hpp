@@ -33,6 +33,14 @@ namespace arabica
                 ;
             }
 
+            template<class E>
+            Realvec(const E& exp)
+            {
+                values[0] = exp[0];
+                values[1] = exp[1];
+                values[2] = exp[2];
+            }
+
             ~Realvec(){}
 
             double operator[](int i)
@@ -68,6 +76,18 @@ namespace arabica
                 return *this;
             }
 
+            Realvec& operator*=(const double rhs)
+            {
+                *this = mul<Realvec>(*this, rhs);
+                return *this;
+            }
+
+            Realvec& operator/=(const double rhs)
+            {
+                *this = div<Realvec>(*this, rhs);
+                return *this;
+            }
+
     };
 
     template <class L, class R>
@@ -82,16 +102,18 @@ namespace arabica
         return sub<L,R>(lhs, rhs);
     }
 
-    template <class L>
-    Realvec operator*(const L& lhs, const double rhs)
+    //TODO: if rhs is not double type, return error.
+    template <class L, class R>
+    Realvec operator*(const L& lhs, const R& rhs)
     {
-        return Realvec(lhs[0]*rhs, lhs[1]*rhs, lhs[2]*rhs);
+        return mul<L>(lhs, rhs);
     }
 
-    template <class L>
-    Realvec operator/(const L& lhs, const double rhs)
+    //TODO: if rhs is not double type, return error.
+    template <class L, class R>
+    Realvec operator/(const L& lhs, const R& rhs)
     {
-        return Realvec(lhs[0]/rhs, lhs[1]/rhs, lhs[2]/rhs);
+        return div<L>(lhs, rhs);
     }
 
     std::ostream& operator<<(std::ostream& os, const Realvec& rv)
