@@ -5,7 +5,8 @@
 #include <vector>
 #include <string>
 #include <memory>
-#include "RealVec.hpp"
+#include <utility>
+#include <eigen3/Eigen/Core>
 
 namespace arabica
 {
@@ -13,7 +14,7 @@ namespace arabica
     {
         public:
 
-            typedef typename std::vector<Realvec> SnapShot;
+            typedef typename std::vector<Eigen::Vector3d> SnapShot;
 
         public:
             DCDReader(){}
@@ -33,8 +34,10 @@ namespace arabica
             int get_nstep() const {return nstep;}
             int get_nunit() const {return nunit;}
             int get_npart() const {return nparticle;}
+            int get_size() const {return data.size();}
             double get_delta_t() const {return delta_t;}
-            SnapShot& get_snapshot(int i){return data.at(i);}
+            std::pair<SnapShot, double> get_snapshot(int i)
+            {return std::make_pair(data.at(i), delta_t * i);}
             std::vector<SnapShot>& get_all_data(int i){return data;}
 
         private:
@@ -273,7 +276,7 @@ namespace arabica
             SnapShot temp_snapshot(nparticle);
             for(int c(0); c != x.size(); ++c)
             {
-                Realvec coord(x.at(c), y.at(c), z.at(c));
+                Eigen::Vector3d coord(x.at(c), y.at(c), z.at(c));
                 temp_snapshot.at(c) = coord;
             }
 

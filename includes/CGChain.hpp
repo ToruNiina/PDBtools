@@ -3,6 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include <boost/regex.hpp>
+#include <eigen3/Eigen/Core>
 #include "CGBeads.hpp"
 #include "ProteinSeq.hpp"
 
@@ -14,8 +15,8 @@ namespace arabica
         MOLECULE_TYPE mol_type;
         char chainID;
         int iunit;
-        std::vector<BeadSptr> residue;
         std::string sequence;
+        std::vector<BeadSptr> residue;
         ProteinSeq seqmap;
 
     public:
@@ -42,12 +43,15 @@ namespace arabica
         void write_block(std::ofstream& ofs);
 
         std::vector<BeadSptr> get_chain(){return residue;}
+        std::vector<Eigen::Vector3d> get_coord();
 
         void sort_imp();
 
         char get_chainID() const {return chainID;}
         int get_iunit() const {return iunit;}
         int get_ResNum() const {return (*(residue.end()-1))->get_iResNum();}
+        int get_size() const {return residue.size();}
+        bool empty() const {return residue.empty();}
         std::string get_sequence() const {return sequence;}
         MOLECULE_TYPE get_moltype() const {return mol_type;}
         bool is_there_chain() const {return there_is_chain;}
@@ -104,6 +108,7 @@ namespace arabica
                 if(block_found)
                     throw std::invalid_argument(
                             "CG PDB block is not closed correctly");
+                std::cout << "found block: " << line << std::endl;
                 block_found = true;
                 continue;
             }
@@ -133,9 +138,7 @@ namespace arabica
                             "CG PDB block is not closed correctly");
                 }
             }
-#ifdef _DEBUG
             std::cout << "unknown line: " << line << std::endl;
-#endif//_DEBUG
         }
 
         if(block_found)
@@ -151,7 +154,6 @@ namespace arabica
     {
         std::sort(residue.begin(), residue.end(), less_imp);
     }
-
 
     void CGChain::write_block(std::ofstream& ofs)
     {
@@ -202,6 +204,18 @@ namespace arabica
             }
         }
         return;
+    }
+
+    std::vector<Eigen::Vector3d> CGChain::get_coord()
+    {
+        std::vector<Eigen::Vector3d> retval;
+        for(auto iter = residue.begin(); iter != residue.end(); ++iter)
+        {
+            retval.emplace_back(Eigen::Vector3d((*iter)->get_coordx(), 
+                                                (*iter)->get_coordy(),
+                                                (*iter)->get_coordz() ));
+        }
+        return retval;
     }
 
     typedef std::shared_ptr<CGChain> CGChnSptr;
