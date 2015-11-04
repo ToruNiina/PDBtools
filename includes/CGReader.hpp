@@ -1,6 +1,6 @@
 #ifndef ARABICA_CGPDB_READER
 #define ARABICA_CGPDB_READER
-#include "CGChain.hpp"
+#include "CGModel.hpp"
 
 namespace arabica
 {
@@ -26,47 +26,21 @@ namespace arabica
             void read_file();
             void read_file(const std::string& filename);
 
-            CGChnSptr& get_chain(const int i)
+            CGMdlSptr& get_chain(const int i)
             {
-                return chains.at(i);
+                return models.at(i);
             }
 
             int get_chain_num() const
             {
-                return chains.size();
+                return models.size();
             }
-
-            CGChnSptr& find(const char ID);
-            int find_id(const char ID);
 
         private:
 
             std::ifstream cgfile;
-            std::vector<CGChnSptr> chains;
+            std::vector<CGMdlSptr> models;
     };
-
-
-    CGChnSptr& CGReader::find(const char ID)
-    {
-        for(auto iter = chains.begin(); iter != chains.end(); ++iter)
-        {
-            if((*iter)->get_chainID() == ID)
-                return *iter;
-        }
-        std::cout << "cannot find ID: " << ID << std::endl;
-        return *(chains.end());
-    }
-
-    int CGReader::find_id(const char ID)
-    {
-        for(int i(0); i<chains.size(); ++i)
-        {
-            if(chains.at(i)->get_chainID() == ID)
-                return i;
-        }
-        std::cout << "cannot find ID: " << ID << std::endl;
-        return -1;
-    }
 
     void CGReader::read_file(const std::string& filename)
     {
@@ -83,13 +57,13 @@ namespace arabica
     {
         while(!cgfile.eof())
         {
-            CGChnSptr temp(new CGChain);
+            CGMdlSptr temp(new CGModel);
 
-            temp->read_block(cgfile);
+            temp->read_file(cgfile);
 
             if(temp->empty()) break;
 
-            chains.push_back(temp);
+            models.push_back(temp);
         }
         return;
     }
