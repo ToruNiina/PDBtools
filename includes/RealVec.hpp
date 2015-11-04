@@ -43,7 +43,7 @@ namespace arabica
 
             ~Realvec(){}
 
-            double operator[](int i)
+            double& operator[](int i)
             {
                 return values[i];
             }
@@ -118,12 +118,10 @@ namespace arabica
 
     std::ostream& operator<<(std::ostream& os, const Realvec& rv)
     {
-        os << "(";
         os << std::setprecision(16) << rv.values[0] << " ";
         os << std::setprecision(16) << rv.values[1] << " ";
-        os << std::setprecision(16) << rv.values[2] << ")";
+        os << std::setprecision(16) << rv.values[2];
         return os;
     }
-
 }
 #endif //ARABICA_REALVEC_H
