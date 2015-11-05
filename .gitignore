@@ -2,6 +2,7 @@
 *.dcd
 *.dat
 *.out
+*.ts
 !*.cpp
 !*.hpp
 !CMakeLists.txt

@@ -21,7 +21,10 @@ namespace arabica
             DCDReader(const std::string& filename)
             : dcdfile(filename, std::ios::binary)
             {
-                ;
+                if(dcdfile.fail())
+                {
+                    throw std::invalid_argument("file open error");
+                }
             }
             ~DCDReader(){}
 
@@ -36,8 +39,12 @@ namespace arabica
             int get_npart() const {return nparticle;}
             int get_size() const {return data.size();}
             double get_delta_t() const {return delta_t;}
+
             std::pair<SnapShot, double> get_snapshot(int i)
             {return std::make_pair(data.at(i), delta_t * i);}
+
+            SnapShot& at(int i){return data.at(i);}
+
             std::vector<SnapShot>& get_all_data(int i){return data;}
 
         private:
@@ -79,18 +86,26 @@ namespace arabica
     {
         if(dcdfile.is_open())
         {
-            std::cout << "Warning: DCDReader already open a dcd file. "
-                      << "read opened file. not " << filename << std::endl;
-            read_file();
-            return;
+            std::cout << "Warning: DCDReader already open a dcd file. " << std::endl;
         }
-        dcdfile.open(filename, std::ios::binary);
+        else
+        {
+            dcdfile.open(filename, std::ios::binary);
+            if(dcdfile.fail())
+            {
+                throw std::invalid_argument("file open error");
+            }
+        }
         read_file();
         return;
     }
 
     void DCDReader::read_file()
     {
+        if(dcdfile.fail())
+        {
+            throw std::invalid_argument("file open error");
+        }
         read_header();
         read_core();
         std::cout << "read_file completed" << std::endl;

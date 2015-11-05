@@ -15,7 +15,11 @@ namespace arabica
             CGReader(const std::string& filename)
                 : cgfile(filename)
             {
-                ;
+                if(cgfile.fail())
+                {
+                    std::cout << "filename : " << filename << std::endl;
+                    throw std::invalid_argument("file open error");
+                }
             }
 
             ~CGReader()
@@ -26,12 +30,12 @@ namespace arabica
             void read_file();
             void read_file(const std::string& filename);
 
-            CGMdlSptr& get_chain(const int i)
+            CGMdlSptr& get_model(const int i)
             {
                 return models.at(i);
             }
 
-            int get_chain_num() const
+            int get_model_num() const
             {
                 return models.size();
             }
@@ -48,7 +52,17 @@ namespace arabica
         {
             std::cout << "file already open" << std::endl;
         }
-        cgfile.open(filename);
+        else
+        {
+            cgfile.open(filename);
+        }
+
+        if(cgfile.fail())
+        {
+            std::cout << "filename : " << filename << std::endl;
+            throw std::invalid_argument("file open error");
+        }
+
         read_file();
         return;
     }

@@ -25,9 +25,9 @@ namespace arabica
             bool empty(){return chains.empty();}
             int size(){return chains.size();}
             CGChnSptr& at(const int i){return chains.at(i);}
+            std::vector<CGChnSptr>& get_data(){return chains;}
             CGChnSptr& find(const char ID);
             int find_id(const char ID);
-            std::vector<CGChnSptr>& get_data(){return chains;}
 
         private:
 
@@ -60,9 +60,13 @@ namespace arabica
                 std::cout << line << std::endl;
             }
 
-            if(line.substr(0,6) == "ENDMDL" && model_found)
+            if(line.substr(0,6) == "ENDMDL")
             {
-                std::cout << "end of model block founded" << std::endl;
+                if(model_found)
+                    std::cout << "end of model block found" << std::endl;
+                else
+                    std::cout << "model does not exist but end of model found"
+                              << std::endl;
                 return;
             }
             CGChnSptr chain(new CGChain);
@@ -76,7 +80,8 @@ namespace arabica
             return;
         }
 
-        throw std::invalid_argument("model(or end of model) not found");
+        std::cout << "Warning: end of model not found" << std::endl;
+        return;
     }
 
     CGChnSptr& CGModel::find(const char ID)
