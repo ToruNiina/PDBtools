@@ -21,14 +21,6 @@ namespace arabica
             UNKNOWN
         };
 
-    private:
-
-        int serial, resSeq;
-        std::string name, resName, element, charge;
-        char altLoc, chainID, iCode;
-        double x, y, z;
-        double occupancy, tempFactor;
-
     public:
 
         PDBAtom();
@@ -63,6 +55,14 @@ namespace arabica
         void set_z(double _z){z = _z;}
 
         friend std::ostream& operator<<(std::ostream& os, const PDBAtom& a);
+
+    private:
+
+        int serial, resSeq;
+        std::string name, resName, element, charge;
+        char altLoc, chainID, iCode;
+        double x, y, z;
+        double occupancy, tempFactor;
     };
 
     PDBAtom::PDBAtom(){}

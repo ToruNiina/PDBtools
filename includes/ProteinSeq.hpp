@@ -12,8 +12,6 @@ namespace arabica
 {
     class ProteinSeq
     {
-            std::map<std::string, char> sequence_map;
-
         public:
 
             ProteinSeq();
@@ -22,6 +20,10 @@ namespace arabica
             char pseq_3to1(const std::string& aacode) const;
             std::string pseq_1to3(const char aacode);//it tooks some time
             bool find(const std::string& aacode);
+
+        private:
+
+            std::map<std::string, char> sequence_map;
     };
 
     ProteinSeq::ProteinSeq()

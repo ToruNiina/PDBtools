@@ -8,10 +8,6 @@ namespace arabica
 {
     class PDBChain
     {
-        bool there_is_chain;
-        char chainID;
-        std::vector<AtomSptr> atoms;
-
     public:
 
         PDBChain(): there_is_chain(false) {}
@@ -26,6 +22,12 @@ namespace arabica
         char get_chainID(){return chainID;}
         std::string get_sequence();
         bool is_there_chain() const {return there_is_chain;}
+
+    private:
+
+        bool there_is_chain;
+        char chainID;
+        std::vector<AtomSptr> atoms;
     };
 
     void PDBChain::push_back(AtomSptr& atom)

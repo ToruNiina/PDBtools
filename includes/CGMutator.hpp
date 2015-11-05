@@ -6,12 +6,6 @@ namespace arabica
 {
     class CGMutator
     {
-        std::string mutated_seq;
-
-        ProteinSeq seqmap;
-        CGChnSptr input;
-        CGChnSptr mutated;
-
     public:
 
         CGMutator(CGChnSptr chain)
@@ -36,6 +30,14 @@ namespace arabica
         void mut_PRO(const char aacode,
                     std::vector<BeadSptr>::iterator& iter,
                     std::vector<BeadSptr>::iterator& end);
+
+    private:
+
+        std::string mutated_seq;
+        CGChnSptr input;
+        CGChnSptr mutated;
+        ProteinSeq seqmap;
+
     };
 
     void CGMutator::mutate()

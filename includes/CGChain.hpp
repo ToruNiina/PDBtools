@@ -11,13 +11,6 @@ namespace arabica
 {
     class CGChain
     {
-        bool there_is_chain;
-        MOLECULE_TYPE mol_type;
-        char chainID;
-        int iunit;
-        std::string sequence;
-        std::vector<BeadSptr> residue;
-        ProteinSeq seqmap;
 
     public:
         CGChain(): there_is_chain(false){}
@@ -59,7 +52,17 @@ namespace arabica
     private:
 
         void read_sequence();
-        
+
+    private:
+
+        bool there_is_chain;
+        MOLECULE_TYPE mol_type;
+        char chainID;
+        int iunit;
+        std::string sequence;
+        std::vector<BeadSptr> residue;
+        ProteinSeq seqmap;
+
     };
 
     void CGChain::push_back(BeadSptr& bead)

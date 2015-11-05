@@ -12,14 +12,6 @@ namespace arabica
 {
     class CGBead
     {
-        char chainID;
-        int imp;//mass particle number
-        int iResNum;//residue sequence number
-        double x, y, z;
-        std::string head;//hedder. like ATOM, HEATOM
-        std::string bead;//bead type. like CA(carbon alpha), DB(DNA base), etc.
-        std::string seq;//sequence. like ALA(alanine), DG(DNA guanine), etc.
-
     public:
         CGBead(){}
         ~CGBead(){}
@@ -51,6 +43,15 @@ namespace arabica
 
         void line_input(std::string line);
 
+    private:
+
+        char chainID;
+        int imp;//mass particle number
+        int iResNum;//residue sequence number
+        double x, y, z;
+        std::string head;//hedder. like ATOM, HEATOM
+        std::string bead;//bead type. like CA(carbon alpha), DB(DNA base), etc.
+        std::string seq;//sequence. like ALA(alanine), DG(DNA guanine), etc.
     };
 
     void CGBead::get_line(std::string& line)
