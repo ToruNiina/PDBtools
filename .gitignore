@@ -12,3 +12,4 @@ Makefile
 CMakeFiles/
 seqextr
 mutator
+rmsdcalc

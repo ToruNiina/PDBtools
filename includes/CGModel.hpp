@@ -51,21 +51,21 @@ namespace arabica
 
             if(line.substr(0,5) == "MODEL")
             {
-                std::cout << "model found." << std::endl;
+                std::cout << "Info   : model found." << std::endl;
                 model_found = true;
                 std::istringstream ls(line);
                 std::string temp;
                 ls >> temp >> model_ID;
                 ls >> temp >> step;
-                std::cout << line << std::endl;
+                std::cout << "Info   :" << line << std::endl;
             }
 
             if(line.substr(0,6) == "ENDMDL")
             {
                 if(model_found)
-                    std::cout << "end of model block found" << std::endl;
+                    std::cout << "Info   : end of model block found" << std::endl;
                 else
-                    std::cout << "model does not exist but end of model found"
+                    std::cout << "Warning: model does not exist but end of model found"
                               << std::endl;
                 return;
             }
@@ -76,7 +76,7 @@ namespace arabica
 
         if(!model_found)
         {
-            std::cout << "model description not found" << std::endl;
+            std::cout << "Warning: model description not found" << std::endl;
             return;
         }
 
@@ -91,7 +91,7 @@ namespace arabica
             if((*iter)->get_chainID() == ID)
                 return *iter;
         }
-        std::cout << "cannot find ID: " << ID << std::endl;
+        std::cout << "Warning: cannot find ID: " << ID << std::endl;
         return *(chains.end());
     }
 
@@ -102,7 +102,7 @@ namespace arabica
             if(chains.at(i)->get_chainID() == ID)
                 return i;
         }
-        std::cout << "cannot find ID: " << ID << std::endl;
+        std::cout << "Warning: cannot find ID: " << ID << std::endl;
         return -1;
     }
 

@@ -8,8 +8,8 @@ int main(int argc, char* argv[])
 {
     if(argc != 2 && argc != 3)
     {
-        std::cout << "Usage : ./seqextr [OPTION] [filename].pdb" << std::endl;
-        std::cout << "Option: -cg : read cg style" << std::endl;
+        std::cout << "Usage  : ./seqextr [OPTION] [filename].pdb" << std::endl;
+        std::cout << "Option : -cg : read cg style" << std::endl;
         return -1;
     }
 
@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
 
             if(chain.is_there_chain())
             {
-                std::cout << "Chain " << chain.get_chainID() << " : ";
+                std::cout << "Chain " << chain.get_chainID() << ": ";
                 std::cout << chain.get_sequence() << std::endl;
             }
         }
@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
 
             if(chain.is_there_chain())
             {
-                std::cout << "Chain " << chain.get_chainID() << " : ";
+                std::cout << "Chain " << chain.get_chainID() << ": ";
                 std::cout << chain.get_sequence() << std::endl;
             }
         }

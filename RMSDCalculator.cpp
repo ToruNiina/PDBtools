@@ -3,6 +3,10 @@
 #include "includes/CGReader.hpp"
 using namespace arabica;
 
+DCDReader::SnapShot pickup_chain(const DCDReader::SnapShot& ss, 
+                                 const std::vector<int>& chain_ids,
+                                 const std::vector<int>& chain_sizes);
+
 int main(int argc, char *argv[])
 {
     if(argc != 3)
@@ -26,26 +30,34 @@ int main(int argc, char *argv[])
     std::string IDs(argv[2]);
     std::transform(IDs.cbegin(), IDs.cend(), IDs.begin(), toupper);
 
-    std::cout << "model->size" << model->size() << std::endl;
+//     std::cout << "model->size" << model->size() << std::endl;
     //this contains how many mass points the chain has
-    std::vector<int> imps;
+    std::vector<int> chain_sizes;
     for(int i(0); i<model->size(); ++i)
     {
-        imps.push_back(model->at(i)->get_size());
-        std::cout<< "model->at->get_size" << model->at(i)->get_size() << std::endl;
+        chain_sizes.push_back(model->at(i)->get_size());
+        std::cout<< "model->at(" << i << ")->get_size" << model->at(i)->get_size() << std::endl;
     }
-    for(int i(0); i<imps.size(); ++i)
-        std::cout << imps.at(i) << std::endl;
+//     for(int i(0); i<chain_sizes.size(); ++i)
+//         std::cout << chain_sizes.at(i) << std::endl;
 
     //this contains what is the ID of the chain to calculate RMSD
-    std::vector<int> imp_ID;
+    std::vector<int> chain_IDs;
     for(auto iter = IDs.begin(); iter != IDs.end(); ++iter)
     {
-        imp_ID.push_back(model->find_id(*iter));
-        std::cout << "model->find_id" << model->find_id(*iter) << std::endl;
+        chain_IDs.push_back(model->find_id(*iter));
+//         std::cout << "model->find_id" << model->find_id(*iter) << std::endl;
     }
-    for(int i(0); i<imp_ID.size(); ++i)
-        std::cout << imp_ID.at(i) << std::endl;
+//     for(int i(0); i<chain_IDs.size(); ++i)
+//         std::cout << chain_IDs.at(i) << std::endl;
+
+//TODO
+//     int end_ID(0);
+//     for(int i(0); i <= *(chain_IDs.end() - 1); ++i)
+//     {
+//         end_ID += chain_sizes.at(i);
+//     }
+//     std::cout << "end_ID " << end_ID << std::endl;
 
     std::string dcd(filename + ".dcd");
     DCDReader dcdreader;
@@ -70,34 +82,56 @@ int main(int argc, char *argv[])
     std::pair<DCDReader::SnapShot, double> second_
         (dcdreader.get_snapshot(1));
 
-    std::cout << "initial snapshot" << std::endl;
-//TODO
-    int end_ID(0);
-    for(int i(0); i < *(imp_ID.end() - 1); ++i)
-    {
-        end_ID += imps.at(i);
-    }
-    std::cout << "end_ID " << end_ID << std::endl;
+//     std::cout << "initial snapshot" << std::endl;
 
-    DCDReader::SnapShot init(initial.first.begin(), (initial.first.begin() + end_ID));
-    DCDReader::SnapShot seco(initial.first.begin(), (initial.first.begin() + end_ID));
+//     DCDReader::SnapShot init(initial.first.begin(), (initial.first.begin() + end_ID));
+//     DCDReader::SnapShot seco(initial.first.begin(), (initial.first.begin() + end_ID));
+    DCDReader::SnapShot init(pickup_chain(initial.first, chain_IDs, chain_sizes));
+    DCDReader::SnapShot seco(pickup_chain(initial.first, chain_IDs, chain_sizes));
+
     std::cout << "init size " << init.size() << std::endl;
     std::cout << "seco size " << seco.size() << std::endl;
 
-    rmsdcalc.set_data(init, seco);
 
-    ofs << 0e0 << " " << 0e0 << std::endl;
+    rmsdcalc.set_data(init, init);
+    ofs << 0e0 << " " << rmsdcalc.get_RMSD() << std::endl;
+
+    rmsdcalc.set_data(init, seco);
     ofs << second_.second << " " << rmsdcalc.get_RMSD() << std::endl;
 
     for(int i(2); i < dcdreader.get_size(); ++i)
     {
         std::pair<DCDReader::SnapShot, double> snapshot
             (dcdreader.get_snapshot(i));
-        DCDReader::SnapShot sshot(snapshot.first.begin(), (snapshot.first.begin()+end_ID));
+//         DCDReader::SnapShot sshot(snapshot.first.begin(), (snapshot.first.begin()+end_ID));
+        DCDReader::SnapShot sshot(pickup_chain(snapshot.first, chain_IDs, chain_sizes));
 
         rmsdcalc.set_data2(sshot);
         ofs << snapshot.second << " " << rmsdcalc.get_RMSD() << std::endl;
     }
 
     return 0;
+}
+
+DCDReader::SnapShot pickup_chain(const DCDReader::SnapShot& ss, 
+                                 const std::vector<int>& chain_ids,
+                                 const std::vector<int>& chain_sizes)
+{
+    DCDReader::SnapShot retval(ss);
+
+    DCDReader::SnapShot::iterator ssiter = retval.begin();
+
+    for(int i(0); i<chain_sizes.size(); ++i)
+    {
+        if(std::find(chain_ids.begin(), chain_ids.end(), i) != chain_ids.end())
+        {
+            ssiter = ssiter + chain_sizes.at(i);
+        }
+        else
+        {
+            retval.erase(ssiter, ssiter + chain_sizes.at(i));
+        }
+    }
+
+    return retval;
 }

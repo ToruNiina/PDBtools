@@ -108,7 +108,7 @@ namespace arabica
         }
         read_header();
         read_core();
-        std::cout << "read_file completed" << std::endl;
+        std::cout << "Info   : read_file completed" << std::endl;
         return;
     }
 
@@ -171,8 +171,8 @@ namespace arabica
         nstep = *reinterpret_cast<int*>(cnstep);
         delete [] cnstep;
 
-        std::cout << "nstep: " << nstep << std::endl;
-        std::cout << "number of saved snapshot: "
+        std::cout << "Info   : nstep: " << nstep << std::endl;
+        std::cout << "Info   : number of saved snapshot: "
                   << nstep / nstep_save << std::endl;
 
         char *cnunit = new char[size_int];
@@ -190,7 +190,7 @@ namespace arabica
         delta_t = static_cast<double>(fdelta);
         delete [] cdelta;
 
-        std::cout << "delta t: " << delta_t << std::endl;
+        std::cout << "Info   : delta t: " << delta_t << std::endl;
 
         char *null_2 = new char[36];
         dcdfile.read(null_2, 36);
@@ -228,7 +228,8 @@ namespace arabica
         {
             std::cout << "Warning: header block2 size = "
                       << bytes << "bytes." << std::endl;
-            std::cout << "block2 has " << lines << "lines" << std::endl;
+            std::cout << "         but block2 has " << lines
+                      << "lines" << std::endl;
             throw std::invalid_argument("header block2 has invalid size");
         }
 
@@ -263,7 +264,7 @@ namespace arabica
         nparticle = *reinterpret_cast<int*>(cnpart);
         delete [] cnpart;
 
-        std::cout << "there are " << nparticle
+        std::cout << "Info   : there are " << nparticle
                   << " particles in this file" << std::endl;
 
         char *cbytes_f = new char[size_int];

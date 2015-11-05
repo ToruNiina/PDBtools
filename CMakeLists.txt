@@ -16,8 +16,8 @@ add_executable(mutator
 target_link_libraries(mutator
     ${BOOST_REGEX})
 
-add_executable(rmsdtest
-    RMSDtest.cpp)
+add_executable(rmsdcalc
+    RMSDCalculator.cpp)
 
-target_link_libraries(rmsdtest
+target_link_libraries(rmsdcalc
     ${BOOST_REGEX})

@@ -72,7 +72,7 @@ namespace arabica
 
         if(bead->get_chainID() != chainID)
         {
-            std::cout << "Error: trying to push_back bead having different chainID"
+            std::cout << "Error  : trying to push_back bead having different chainID"
                       << std::endl;
             throw std::invalid_argument("invalid chainID");
         }
@@ -108,7 +108,7 @@ namespace arabica
                 if(block_found)
                     throw std::invalid_argument(
                             "CG PDB block is not closed correctly");
-                std::cout << "found block: " << line << std::endl;
+                std::cout << "Info   : found block: " << line << std::endl;
                 block_found = true;
                 continue;
             }
@@ -123,7 +123,7 @@ namespace arabica
             {
                 if(block_found)
                 {
-                    std::cout << "ENDMDL found." << std::endl;
+                    std::cout << "Info   : ENDMDL found." << std::endl;
                     throw std::invalid_argument(
                             "CG PDB block is not closed correctly");
                 }
@@ -133,7 +133,7 @@ namespace arabica
             {
                 if(block_found)
                 {
-                    std::cout << "MODEL found." << std::endl;
+                    std::cout << "Info   : MODEL found." << std::endl;
                     throw std::invalid_argument(
                             "CG PDB block is not closed correctly");
                 }
@@ -143,7 +143,7 @@ namespace arabica
 
         if(block_found)
         {
-            std::cout << "cannot find end of block >>" << std::endl;
+            std::cout << "Warning: cannot find end of block >>" << std::endl;
             throw std::invalid_argument("CG PDB block does not close correctly");
         }
         read_sequence();
@@ -200,7 +200,7 @@ namespace arabica
             else
             {//unknown. RNA?
                 mol_type = UNKNOWN;
-                std::cout << "Unknown sequence: " << seqname << std::endl;
+                std::cout << "Warning: Unknown sequence: " << seqname << std::endl;
             }
         }
         return;
