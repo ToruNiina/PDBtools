@@ -3,7 +3,7 @@
 #include "includes/CGReader.hpp"
 using namespace arabica;
 
-DCDReader::SnapShot pickup_chain(const DCDReader::SnapShot& ss, 
+SnapShot pickup_chain(const SnapShot& ss, 
                                  const std::vector<int>& chain_ids,
                                  const std::vector<int>& chain_sizes);
 
@@ -76,18 +76,18 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    std::pair<DCDReader::SnapShot, double> initial
+    std::pair<SnapShot, double> initial
         (dcdreader.get_snapshot(0));
 
-    std::pair<DCDReader::SnapShot, double> second_
+    std::pair<SnapShot, double> second_
         (dcdreader.get_snapshot(1));
 
 //     std::cout << "initial snapshot" << std::endl;
 
-//     DCDReader::SnapShot init(initial.first.begin(), (initial.first.begin() + end_ID));
-//     DCDReader::SnapShot seco(initial.first.begin(), (initial.first.begin() + end_ID));
-    DCDReader::SnapShot init(pickup_chain(initial.first, chain_IDs, chain_sizes));
-    DCDReader::SnapShot seco(pickup_chain(initial.first, chain_IDs, chain_sizes));
+//     SnapShot init(initial.first.begin(), (initial.first.begin() + end_ID));
+//     SnapShot seco(initial.first.begin(), (initial.first.begin() + end_ID));
+    SnapShot init(pickup_chain(initial.first, chain_IDs, chain_sizes));
+    SnapShot seco(pickup_chain(initial.first, chain_IDs, chain_sizes));
 
     std::cout << "init size " << init.size() << std::endl;
     std::cout << "seco size " << seco.size() << std::endl;
@@ -101,10 +101,10 @@ int main(int argc, char *argv[])
 
     for(int i(2); i < dcdreader.get_size(); ++i)
     {
-        std::pair<DCDReader::SnapShot, double> snapshot
+        std::pair<SnapShot, double> snapshot
             (dcdreader.get_snapshot(i));
-//         DCDReader::SnapShot sshot(snapshot.first.begin(), (snapshot.first.begin()+end_ID));
-        DCDReader::SnapShot sshot(pickup_chain(snapshot.first, chain_IDs, chain_sizes));
+//         SnapShot sshot(snapshot.first.begin(), (snapshot.first.begin()+end_ID));
+        SnapShot sshot(pickup_chain(snapshot.first, chain_IDs, chain_sizes));
 
         rmsdcalc.set_data2(sshot);
         ofs << snapshot.second << " " << rmsdcalc.get_RMSD() << std::endl;
@@ -113,13 +113,13 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-DCDReader::SnapShot pickup_chain(const DCDReader::SnapShot& ss, 
+SnapShot pickup_chain(const SnapShot& ss, 
                                  const std::vector<int>& chain_ids,
                                  const std::vector<int>& chain_sizes)
 {
-    DCDReader::SnapShot retval(ss);
+    SnapShot retval(ss);
 
-    DCDReader::SnapShot::iterator ssiter = retval.begin();
+    SnapShot::iterator ssiter = retval.begin();
 
     for(int i(0); i<chain_sizes.size(); ++i)
     {

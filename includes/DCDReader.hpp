@@ -1,21 +1,13 @@
 #ifndef ARABICA_DCD_READER
 #define ARABICA_DCD_READER
-#include <iostream>
-#include <fstream>
-#include <vector>
-#include <string>
 #include <memory>
 #include <utility>
-#include <eigen3/Eigen/Core>
+#include "DCDDef.hpp"
 
 namespace arabica
 {
     class DCDReader
     {
-        public:
-
-            typedef typename std::vector<Eigen::Vector3d> SnapShot;
-
         public:
             DCDReader(){}
             DCDReader(const std::string& filename)
@@ -26,7 +18,10 @@ namespace arabica
                     throw std::invalid_argument("file open error");
                 }
             }
-            ~DCDReader(){}
+            ~DCDReader()
+            {
+                dcdfile.close();
+            }
 
             void read_file();
             void read_file(const std::string& filename);
@@ -37,15 +32,15 @@ namespace arabica
             int get_nstep() const {return nstep;}
             int get_nunit() const {return nunit;}
             int get_npart() const {return nparticle;}
-            int get_size() const {return data.size();}
             double get_delta_t() const {return delta_t;}
 
             std::pair<SnapShot, double> get_snapshot(int i)
             {return std::make_pair(data.at(i), delta_t * i);}
 
+            int get_size() const {return data.size();}
             SnapShot& at(int i){return data.at(i);}
 
-            std::vector<SnapShot>& get_all_data(int i){return data;}
+            std::vector<SnapShot>& get_all_data(){return data;}
 
         private:
 
@@ -86,7 +81,8 @@ namespace arabica
     {
         if(dcdfile.is_open())
         {
-            std::cout << "Warning: DCDReader already open a dcd file. " << std::endl;
+            std::cout << "Warning: DCDReader already open a dcd file. "
+                      << std::endl;
         }
         else
         {
@@ -241,6 +237,7 @@ namespace arabica
             std::cout << line << std::endl;
             delete [] line;
         }
+        std::cout << "header end" << std::endl;
 
         char *cbytes_f = new char[size_int];
         dcdfile.read(cbytes_f, size_int);
@@ -283,7 +280,7 @@ namespace arabica
         int saved(nstep / nstep_save);
         data.reserve(saved);
 
-        for(int i(0); i<saved; ++i)
+        for(int i(0); i<=saved; ++i)
         {
             std::vector<double> x(read_x());
             std::vector<double> y(read_y());
@@ -307,13 +304,13 @@ namespace arabica
         char *cbytes = new char[size_int];
         dcdfile.read(cbytes, size_int);
         int bytes(*reinterpret_cast<int*>(cbytes));
-        if(bytes / size_int != nparticle)
+        if(bytes / size_float != nparticle)
         {
             std::cout << "Warning: "
                       << "dcd file x coordinate has "
-                      << bytes << "bytes but nparticle is"
-                      << nparticle << ", and sizeof int is"
-                      << size_int
+                      << bytes << " bytes but nparticle is"
+                      << nparticle << ", and sizeof float is "
+                      << size_float
                       << std::endl;
             throw std::invalid_argument(
                     "x coordinate block has invalid byte-information");
@@ -350,13 +347,13 @@ namespace arabica
         char *cbytes = new char[size_int];
         dcdfile.read(cbytes, size_int);
         int bytes(*reinterpret_cast<int*>(cbytes));
-        if(bytes / size_int != nparticle)
+        if(bytes / size_float != nparticle)
         {
             std::cout << "Warning: "
                       << "dcd file y coordinate has "
-                      << bytes << "bytes but nparticle is"
-                      << nparticle << ", and sizeof int is"
-                      << size_int
+                      << bytes << " bytes but nparticle is "
+                      << nparticle << ", and sizeof(float) is"
+                      << size_float
                       << std::endl;
             throw std::invalid_argument(
                     "y coordinate block has invalid byte-information");
@@ -393,13 +390,13 @@ namespace arabica
         char *cbytes = new char[size_int];
         dcdfile.read(cbytes, size_int);
         int bytes(*reinterpret_cast<int*>(cbytes));
-        if(bytes / size_int != nparticle)
+        if(bytes / size_float != nparticle)
         {
             std::cout << "Warning: "
                       << "dcd file z coordinate has "
                       << bytes << "bytes but nparticle is"
-                      << nparticle << ", and sizeof int is"
-                      << size_int
+                      << nparticle << ", and sizeof(float) is"
+                      << size_float
                       << std::endl;
             throw std::invalid_argument(
                     "z coordinate block has invalid byte-information");
