@@ -9,9 +9,8 @@ namespace arabica
 //     {
 //
 //     };
-    
-
-    void set_from_reader(DCDWriter *writer, DCDReader *reader)
+ 
+    void set_header_from_reader(DCDWriter *writer, DCDReader *reader)
     {
         writer->set_nset(reader->get_nset());
         writer->set_istart(reader->get_istart());
@@ -20,9 +19,16 @@ namespace arabica
         writer->set_nunit(reader->get_nunit());
         writer->set_npart(reader->get_npart());
         writer->set_delta_t(reader->get_delta_t());
+        return;
+    }  
+
+    void set_from_reader(DCDWriter *writer, DCDReader *reader)
+    {
+        set_header_from_reader(writer, reader);
         writer->set_all_data(reader->get_all_data());
         return;
     }
+
 }
 
 #endif// ARABICA_DCD_MANAGER
