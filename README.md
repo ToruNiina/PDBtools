@@ -4,6 +4,13 @@ wrote out of necessity
 
 arabica is a name of one of the coffee trees.
 
+###Build
+
+if you have cmake, it is very easy.
+
+    $ cmake .
+    $ make
+
 ###Usage
 
 ####seqextr
@@ -42,10 +49,18 @@ rmsdcalc automatically adds the extension(.pdb and .dcd), so you should input fi
 
 and you can set chain IDs that you want to calculate RMSD value. 
 
+####superimpose
+
+`$./superimpose <filename>.dcd`
+
+superimposer outputs dcd file including superimposed structure.
+
 ###included library
 
 - boost(boost regular expression)
 - Eigen(for calculate eigenvalue)
+
+to use my tool, install Eigen on /usr/include (Ubuntu) or re-write #include path
 
 ###Reference
 
